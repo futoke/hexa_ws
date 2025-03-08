@@ -1,5 +1,5 @@
 <robot name="floatingbase" version="1.0">
-  <joint name="FreeFlyerRX" type="revolute">
+  <!-- <joint name="FreeFlyerRX" type="revolute">
     <limit lower="-1.570000" upper="1.570000" effort="0.000000" velocity="0.000000"/>
     <origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 0.000000 0.000000"/>
     <parent link="FreeFlyerZ_Link"/>
@@ -17,7 +17,7 @@
     <limit lower="-1.570000" upper="1.570000" effort="0.000000" velocity="0.000000"/>
     <origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 0.000000 0.000000"/>
     <parent link="FreeFlyerRY_Link"/>
-    <child link="base_link_2"/>
+    <child link="ldlidar_base"/>
     <axis xyz="0.000000 0.000000 1.000000"/>
   </joint>
   <joint name="FreeFlyerX" type="prismatic">
@@ -40,11 +40,11 @@
     <parent link="FreeFlyerY_Link"/>
     <child link="FreeFlyerZ_Link"/>
     <axis xyz="0.000000 0.000000 1.000000"/>
-  </joint>
+  </joint> -->
   <joint name="leg1_link1_joint" type="revolute">
     <limit lower="-2.000000" upper="2.000000" effort="1.960000" velocity="5.220000"/>
     <origin rpy="0.000000 0.000000 -0.523598" xyz="0.077942 -0.045000 0.024150"/>
-    <parent link="base_link_2"/>
+    <parent link="ldlidar_base"/>
     <child link="leg1_link1"/>
     <axis xyz="0.000000 0.000000 1.000000"/>
   </joint>
@@ -72,7 +72,7 @@
   <joint name="leg2_link1_joint" type="revolute">
     <limit lower="-2.000000" upper="2.000000" effort="1.960000" velocity="5.220000"/>
     <origin rpy="0.000000 0.000000 -1.570796" xyz="0.000000 -0.089999 0.024150"/>
-    <parent link="base_link_2"/>
+    <parent link="ldlidar_base"/>
     <child link="leg2_link1"/>
     <axis xyz="0.000000 0.000000 1.000000"/>
   </joint>
@@ -100,7 +100,7 @@
   <joint name="leg3_link1_joint" type="revolute">
     <limit lower="-2.000000" upper="2.000000" effort="1.960000" velocity="5.220000"/>
     <origin rpy="0.000000 0.000000 -2.617994" xyz="-0.077942 -0.045000 0.024150"/>
-    <parent link="base_link_2"/>
+    <parent link="ldlidar_base"/>
     <child link="leg3_link1"/>
     <axis xyz="0.000000 0.000000 1.000000"/>
   </joint>
@@ -128,7 +128,7 @@
   <joint name="leg4_link1_joint" type="revolute">
     <limit lower="-2.000000" upper="2.000000" effort="1.960000" velocity="5.220000"/>
     <origin rpy="0.000000 0.000000 2.617994" xyz="-0.077942 0.045000 0.024150"/>
-    <parent link="base_link_2"/>
+    <parent link="ldlidar_base"/>
     <child link="leg4_link1"/>
     <axis xyz="0.000000 0.000000 1.000000"/>
   </joint>
@@ -156,7 +156,7 @@
   <joint name="leg5_link1_joint" type="revolute">
     <limit lower="-2.000000" upper="2.000000" effort="1.960000" velocity="5.220000"/>
     <origin rpy="0.000000 0.000000 1.570796" xyz="-0.000000 0.089999 0.024150"/>
-    <parent link="base_link_2"/>
+    <parent link="ldlidar_base"/>
     <child link="leg5_link1"/>
     <axis xyz="0.000000 0.000000 1.000000"/>
   </joint>
@@ -184,7 +184,7 @@
   <joint name="leg6_link1_joint" type="revolute">
     <limit lower="-2.000000" upper="2.000000" effort="1.960000" velocity="5.220000"/>
     <origin rpy="0.000000 0.000000 0.523599" xyz="0.077942 0.045000 0.024150"/>
-    <parent link="base_link_2"/>
+    <parent link="ldlidar_base"/>
     <child link="leg6_link1"/>
     <axis xyz="0.000000 0.000000 1.000000"/>
   </joint>
@@ -209,17 +209,17 @@
     <child link="leg6_link4"/>
     <axis xyz="0.000000 0.000000 1.000000"/>
   </joint>
-  <joint name="lidar_joint" type="fixed">
+  <!-- <joint name="lidar_joint" type="fixed">
     <origin rpy="0.000000 0.000000 0.000000" xyz="-0.000038 -0.000818 0.108350"/>
-    <parent link="base_link_2"/>
+    <parent link="ldlidar_base"/>
     <child link="lidar_link"/>
-  </joint>
-  <joint name="rgbd_joint" type="fixed">
+  </joint> -->
+  <!-- <joint name="rgbd_joint" type="fixed">
     <origin rpy="0.000000 0.000000 0.000000" xyz="0.080951 0.000000 0.084500"/>
-    <parent link="base_link_2"/>
+    <parent link="ldlidar_base"/>
     <child link="rgbd_link"/>
-  </joint>
-  <link name="FreeFlyerRX_Link">
+  </joint> -->
+  <!-- <link name="FreeFlyerRX_Link">
     <inertial>
       <inertia ixx="0.000010" ixy="0.000000" ixz="0.000000" iyy="0.000010" iyz="0.000000" izz="0.000010"/>
       <origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 0.000000 0.000000"/>
@@ -253,7 +253,7 @@
       <origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 0.000000 0.000000"/>
       <mass value="0.000010"/>
     </inertial>
-  </link>
+  </link> -->
   <link name="base_link">
     <inertial>
       <inertia ixx="0.000010" ixy="0.000000" ixz="0.000000" iyy="0.000010" iyz="0.000000" izz="0.000010"/>
@@ -261,7 +261,7 @@
       <mass value="0.000010"/>
     </inertial>
   </link>
-  <link name="base_link_2">
+  <link name="ldlidar_base">
     <inertial>
       <inertia ixx="0.000010" ixy="0.000000" ixz="0.000000" iyy="0.000010" iyz="0.000000" izz="0.000010"/>
       <origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 0.000000 0.000000"/>
@@ -569,7 +569,7 @@
       <mass value="0.000010"/>
     </inertial>
   </link>
-  <link name="lidar_link">
+  <!-- <link name="lidar_link">
     <inertial>
       <inertia ixx="0.000010" ixy="0.000000" ixz="0.000000" iyy="0.000010" iyz="0.000000" izz="0.000010"/>
       <origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 0.000000 0.000000"/>
@@ -582,8 +582,8 @@
         <mesh filename="package://hexa_description/meshes/stl/hexo_base_v1.003.stl" scale="1.000000 1.000000 1.000000"/>
       </geometry>
     </visual>
-  </link>
-  <link name="rgbd_link">
+  </link> -->
+  <!-- <link name="rgbd_link">
     <inertial>
       <inertia ixx="0.000010" ixy="0.000000" ixz="0.000000" iyy="0.000010" iyz="0.000000" izz="0.000010"/>
       <origin rpy="0.000000 0.000000 0.000000" xyz="0.000000 0.000000 0.000000"/>
@@ -596,7 +596,7 @@
         <mesh filename="package://hexa_description/meshes/stl/hexo_base_v1.stl" scale="1.000000 1.000000 1.000000"/>
       </geometry>
     </visual>
-  </link>
+  </link> -->
   <material name="Material">
     <color rgba="0.133333 0.415686 0.800000 1.000000"/>
   </material>

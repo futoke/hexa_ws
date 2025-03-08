@@ -4,6 +4,8 @@ echo source ~/hexa_ws/install/setup.bash >> ~/.bashrc
 
 colcon build
 
+colcon build --packages-select hexa_servo hexa_description hexa_ik
+
 -------------------------------------------------------------------
 
 source install/setup.bash && ros2 launch hexa_description display.launch.py

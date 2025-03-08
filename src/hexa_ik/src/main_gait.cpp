@@ -40,10 +40,8 @@ public:
             "/cmd_vel", 20,
             std::bind(&TripodGaitNode::cmd_vel_callback, this, std::placeholders::_1));
         
-         // Паблишер одометрии
-        odom_pub_ = this->create_publisher<nav_msgs::msg::Odometry>("/odom", 10);
-
-
+        // Паблишер одометрии
+        // odom_pub_ = this->create_publisher<nav_msgs::msg::Odometry>("/odom", 10);
 
         // Таймер для выполнения обработки
         timer_ = this->create_wall_timer(
@@ -70,7 +68,7 @@ private:
 
 
     // Публикация одометрии
-    rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_pub_;
+    // rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_pub_;
 
     rclcpp::TimerBase::SharedPtr timer_;
 
@@ -108,7 +106,7 @@ private:
 
         angular_vector[0] = 0.0; // угловая скорость по оси X
         angular_vector[1] = 0.0; // угловая скорость по оси Y
-        angular_vector[2] =msg->axes[0]*0.05; // Z  hasee
+        angular_vector[2] = msg->axes[0]*0.05; // Z  hasee
 
         step_speed = 0.75 + (msg->axes[4] + 1) * (3.0 - 0.75) / 2.0; // L2 hasse
         // step_speed = 0.75 + (msg->axes[2] + 1) * (3.0 - 0.75) / 2.0; // L2 r-pi
@@ -292,7 +290,7 @@ private:
 
         }
 
-        publish_odometry();
+        // publish_odometry();
         // Публикация состояния суставов
         publish_joint_states();
         
@@ -310,23 +308,23 @@ private:
 
 
         // Публикация одометрии
-    void publish_odometry() {
-        auto odom_msg = nav_msgs::msg::Odometry();
-        odom_msg.header.stamp = this->get_clock()->now();
-        odom_msg.header.frame_id = "odom";
-        odom_msg.child_frame_id = "base_link";
+    // void publish_odometry() {
+    //     auto odom_msg = nav_msgs::msg::Odometry();
+    //     odom_msg.header.stamp = this->get_clock()->now();
+    //     odom_msg.header.frame_id = "odom";
+    //     odom_msg.child_frame_id = "base_link";
 
-        // Заполняем только скорость, позицию пока не трогаем
-        odom_msg.twist.twist.linear.x = linear_vector[0];
-        odom_msg.twist.twist.linear.y = linear_vector[1];
-        odom_msg.twist.twist.linear.z = 0.0;
+    //     // Заполняем только скорость, позицию пока не трогаем
+    //     odom_msg.twist.twist.linear.x = linear_vector[0];
+    //     odom_msg.twist.twist.linear.y = linear_vector[1];
+    //     odom_msg.twist.twist.linear.z = 0.0;
 
-        odom_msg.twist.twist.angular.x = 0.0;
-        odom_msg.twist.twist.angular.y = 0.0;
-        odom_msg.twist.twist.angular.z = 0.0;
+    //     odom_msg.twist.twist.angular.x = 0.0;
+    //     odom_msg.twist.twist.angular.y = 0.0;
+    //     odom_msg.twist.twist.angular.z = 0.0;
 
-        odom_pub_->publish(odom_msg);
-    }
+    //     odom_pub_->publish(odom_msg);
+    // }
 
 
 

@@ -19,7 +19,7 @@ def generate_launch_description():
 
     # Параметры для robot_state_publisher
     params = {'robot_description': robot_desc,
-              'use_sim_time': True}
+              'use_sim_time': False}
 
     # Узел для публикации состояний робота
     robot_state_publisher_node = launch_ros.actions.Node(
@@ -28,6 +28,7 @@ def generate_launch_description():
         output='screen',
         parameters=[params]
     )
+
     # Узел для публикации состояний суставов (обычный)
     joint_state_publisher_node = launch_ros.actions.Node(
         package='joint_state_publisher',
@@ -36,12 +37,21 @@ def generate_launch_description():
         parameters=[params],
         condition=launch.conditions.UnlessCondition(LaunchConfiguration('gui'))
     )
+
     # Узел для публикации состояний суставов (с GUI)
     joint_state_publisher_gui_node = launch_ros.actions.Node(
         package='joint_state_publisher_gui',
         executable='joint_state_publisher_gui',
         name='joint_state_publisher_gui',
         condition=launch.conditions.IfCondition(LaunchConfiguration('gui'))
+    )
+
+    # Узел серво драйвера
+    servo_node = launch_ros.actions.Node(
+        package='hexa_servo',
+        executable='servo',
+        name='hexa_serv_gui',
+        output='screen'
     )
 
     # # Узел для запуска RViz без файла конфигурации
@@ -83,6 +93,15 @@ def generate_launch_description():
         # parameters=[{'device': '/dev/input/js0'}]  # Убедись, что указываешь правильное устройство
     )
 
+    # Fake odom publisher
+    # fake_odom = launch_ros.actions.Node(
+    #     package='tf2_ros',
+    #     executable='static_transform_publisher',
+    #     name='static_transform_publisher',
+    #     output='screen',
+    #     arguments=['0', '0', '0', '0', '0', '0', 'odom', 'base_link_2']
+    # )
+
     # Возвращаем описание запуска
     return launch.LaunchDescription([
         # Аргумент для включения/выключения GUI
@@ -91,19 +110,21 @@ def generate_launch_description():
             default_value='True',
             description='This is a flag for joint_state_publisher_gui'
         ),
+        
         # Аргумент для указания пути к модели URDF
         launch.actions.DeclareLaunchArgument(
             name='model',
             default_value=urdfModelPath,
             description='Path to the urdf model file'
         ),
+
         # Узлы
         robot_state_publisher_node,
         joint_state_publisher_node,
+        servo_node,
+        # fake_odom,
         # joint_state_publisher_gui_node,
-        
-        
-        rviz_node,
+        # rviz_node,
         tripod_gait_node, 
         joy_node,
     ])
