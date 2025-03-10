@@ -65,6 +65,8 @@ sudo apt install -y i2c-tools python3-smbus2
 
 pip install filterpy
 
+sudo apt install ros-humble-robot-localization
+
 colcon build --packages-select ldlidar_component --symlink-install --cmake-args=-DCMAKE_BUILD_TYPE=Release
 
 set ROS_DOMAIN_ID=5

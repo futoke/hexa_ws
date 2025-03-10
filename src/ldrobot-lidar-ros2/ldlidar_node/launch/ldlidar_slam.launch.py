@@ -41,6 +41,13 @@ def generate_launch_description():
         'slam_toolbox.yaml'
     )
 
+    # EKF configuration
+    ekf_config_path = os.path.join(
+        get_package_share_directory('ldlidar_node'),
+        'params',
+        'ekf.yaml'
+    )
+
     # Lifecycle manager node
     lc_mgr_node = Node(
         package='nav2_lifecycle_manager',
@@ -69,6 +76,18 @@ def generate_launch_description():
           ]          
     )
 
+    # Узел локализации
+    loc_node = Node(
+        package="robot_localization",
+        executable="ekf_node",
+        name="ekf_filter_node",
+        output="screen",
+        parameters=[
+          # YAML files
+          ekf_config_path # Parameters
+        ]
+    )
+
     # Узел кинематики
     tripod_gait_node = Node(
         package='hexa_ik',
@@ -85,11 +104,19 @@ def generate_launch_description():
         # parameters=[{'device': '/dev/input/js0'}]  # Убедись, что указываешь правильное устройство
     )
 
-     # Узел серво драйвера
+    # Узел серво драйвера
     servo_node = Node(
         package='hexa_servo',
         executable='servo',
         name='hexa_servo',
+        output='screen'
+    )
+
+    # Узел IMU
+    imu_node = Node(
+        package='mpu6050_driver',
+        executable='mpu6050_driver',
+        name='mpu6050_driver',
         output='screen'
     )
 
@@ -135,6 +162,8 @@ def generate_launch_description():
     ld.add_action(tripod_gait_node)
     ld.add_action(joy_node)
     ld.add_action(servo_node)
+    ld.add_action(imu_node)
+    ld.add_action(loc_node)
 
 
     # Launch Nav2 Lifecycle Manager
