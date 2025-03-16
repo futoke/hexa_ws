@@ -60,6 +60,20 @@ def generate_launch_description():
         ]
     )
 
+    # lc_mgr_node = Node(
+    #     package='nav2_lifecycle_manager',
+    #     executable='lifecycle_manager',
+    #     name='lifecycle_manager_navigation',
+    #     output='screen',
+    #     parameters=[{
+    #         'use_sim_time': False,
+    #         'autostart': True,
+    #         'node_names': ['map_server', 'amcl', 'planner_server',
+    #                        'controller_server', 'recoveries_server', 'bt_navigator',
+    #                        'waypoint_follower']
+    #     }]
+    # )
+
     # SLAM Toolbox node in async mode
     slam_toolbox_node = LifecycleNode(
           package='slam_toolbox',
@@ -74,6 +88,34 @@ def generate_launch_description():
           remappings=[
               ('/scan', '/ldlidar_node/scan')
           ]          
+    )
+
+    map_server = Node(
+        package='nav2_map_server',
+        executable='map_server',
+        parameters=[{'yaml_filename': '/home/spider/hexa_ws/map-1.yaml'}]
+    )
+
+    amcl_node = Node(
+        package='nav2_amcl',
+        executable='amcl',
+        parameters=[{'use_sim_time': False,
+                     'alpha1': 0.2,
+                     'alpha2': 0.2,
+                     'alpha3': 0.2,
+                     'alpha4': 0.2}]
+    )
+
+    nav2_bringup_dir = get_package_share_directory('nav2_bringup')
+    navigation_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(nav2_bringup_dir, 'launch', 'navigation_launch.py')
+        ),
+        launch_arguments={
+            'use_sim_time': 'false',
+             'autostart': 'true',
+            'map': '/home/spider/hexa_ws/map-1.yaml'
+        }.items()
     )
 
     # Узел локализации
@@ -131,13 +173,39 @@ def generate_launch_description():
         }.items()
     )
 
+    static_tf_map_odom = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        output='screen',
+        arguments=[
+            '--x', '0',
+            '--y', '0',
+            '--z', '0',
+            '--roll', '0',
+            '--pitch', '0',
+            '--yaw', '0',
+            '--frame-id', 'map',
+            '--child-frame-id', 'odom'
+        ]
+    )
+
     # Fake odom publisher
     fake_odom = Node(
         package='tf2_ros',
         executable='static_transform_publisher',
         name='static_transform_publisher',
         output='screen',
-        arguments=['0', '0', '0', '0', '0', '0', 'odom', 'base_link']
+        # arguments=['0', '0', '0', '0', '0', '0', 'odom', 'base_link']
+        arguments=[
+            '--x', '0',
+            '--y', '0',
+            '--z', '0',
+            '--roll', '0',
+            '--pitch', '0',
+            '--yaw', '0',
+            '--frame-id', 'odom',
+            '--child-frame-id', 'base_link'
+        ]
     )
 
     # RVIZ2 settings
@@ -164,6 +232,10 @@ def generate_launch_description():
     ld.add_action(servo_node)
     ld.add_action(imu_node)
     ld.add_action(loc_node)
+    # ld.add_action(map_server)
+    # ld.add_action(amcl_node)
+    # ld.add_action(navigation_launch)
+    ld.add_action(static_tf_map_odom)
 
 
     # Launch Nav2 Lifecycle Manager

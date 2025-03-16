@@ -10,13 +10,13 @@ colcon build --packages-select hexa_servo hexa_description hexa_ik
 
 ---- source install/setup.bash && ros2 launch hexa_description display.launch.py
 
-source install/setup.bash && ros2 run hexa_servo servo
+---- source install/setup.bash && ros2 run hexa_servo servo
 
 ---- source install/setup.bash && ros2 launch ldlidar_node ldlidar_bringup.launch.py params_file:=lidar_params.yaml
 
 source install/setup.bash && ros2 launch ldlidar_node ldlidar_slam.launch.py
 
-source install/setup.bash && ros2 run mpu6050_driver mpu6050_driver
+---- source install/setup.bash && ros2 run mpu6050_driver mpu6050_driver
 
 ---- source install/setup.bash && ros2 run hexa_odom hexa_odom
 
@@ -28,7 +28,7 @@ source install/setup.bash && ros2 launch slam_toolbox online_async_launch.py par
 
 -------------------------------------------------------------------
 
-source install/setup.bash && ros2 run hexa_fake_slam fake_slam
+---- source install/setup.bash && ros2 run hexa_fake_slam fake_slam
 
 lidar: /dev/serial/by-id/usb-1a86_USB_Serial-if00-port0
 
@@ -48,6 +48,8 @@ ros2 topic pub /cmd_vel geometry_msgs/msg/Twist "{linear: {x: 0.2, y: 0.0, z: 0.
 sudo apt install ros-humble-tf-transformations
 
 sudo apt install ros-humble-slam-toolbox
+
+sudo apt install ros-humble-navigation2 ros-humble-nav2-bringup
 
 ros2 pkg list | grep slam_toolbox
 
