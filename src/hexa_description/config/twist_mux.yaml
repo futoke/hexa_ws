@@ -1,0 +1,9 @@
+topics:
+  - name: nav2
+    topic: /cmd_vel
+    timeout: 0.5
+    priority: 10
+  - name: joy
+    topic: /joy/cmd_vel
+    timeout: 0.5
+    priority: 100

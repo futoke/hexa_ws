@@ -51,6 +51,8 @@ sudo apt install ros-humble-slam-toolbox
 
 sudo apt install ros-humble-navigation2 ros-humble-nav2-bringup
 
+sudo apt install ros-humble-teleop-twist-joy
+
 ros2 pkg list | grep slam_toolbox
 
 source install/setup.bash && ros2 launch slam_toolbox online_async_launch.py params_file:=slam_params.yaml

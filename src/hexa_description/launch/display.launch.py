@@ -3,6 +3,7 @@
     
 import launch
 from launch.substitutions import Command, LaunchConfiguration
+from ament_index_python.packages import get_package_share_directory
 import launch_ros
 import os
 from launch.actions import TimerAction
@@ -83,6 +84,47 @@ def generate_launch_description():
         # parameters=[{'device': '/dev/input/js0'}]  # Убедись, что указываешь правильное устройство
     )
 
+    servo_node = launch_ros.actions.Node(
+        package='hexa_servo',
+        executable='servo',
+        name='hexa_servo',
+        output='screen'
+    )
+
+    twist_mux_config = os.path.join(
+        get_package_share_directory('hexa_description'), 'config', 'twist_mux.yaml'
+    )
+
+    twist_mux = launch_ros.actions.Node(
+        package='twist_mux',
+        executable='twist_mux',
+        name='twist_mux',
+        output='screen',
+        parameters=[twist_mux_config],
+        remappings=[('/cmd_vel_out', '/cmd_vel')]
+    )
+
+    joy_teleop = launch_ros.actions.Node(
+        package='teleop_twist_joy',
+        executable='teleop_node',
+        name='joy_teleop',
+        output='screen',
+        parameters=[{
+            'axis_linear.x': 3,
+            'scale_linear.x': 1.0,
+            'axis_linear.y': 2,
+            'scale_linear.y': 1.0,
+            'axis_angular.yaw': 0,
+            'scale_angular.yaw': 1.0,
+            'enable_button': 0,
+            'enable_button': 1,
+            'enable_button': 3,
+            'enable_button': 4
+        }],
+        remappings=[('/cmd_vel', '/joy/cmd_vel')]  # Меняем имя топика
+    )
+
+
     # Возвращаем описание запуска
     return launch.LaunchDescription([
         # Аргумент для включения/выключения GUI
@@ -101,7 +143,9 @@ def generate_launch_description():
         robot_state_publisher_node,
         joint_state_publisher_node,
         # joint_state_publisher_gui_node,
-        
+        servo_node,
+        joy_teleop,
+        twist_mux,
         
         rviz_node,
         tripod_gait_node, 

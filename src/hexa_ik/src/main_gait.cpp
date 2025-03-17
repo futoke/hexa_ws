@@ -28,9 +28,9 @@ public:
         joint_state_pub_ = this->create_publisher<sensor_msgs::msg::JointState>("/joint_states", 10);
 
 
-          // Подписка на топик /joy
+          // Подписка на топик /joy/cmd_vel
         joy_subscriber_ = this->create_subscription<sensor_msgs::msg::Joy>(
-         "/joy", 20, 
+         "/joy/cmd_vel", 20, 
          std::bind(&TripodGaitNode::joy_callback, this, std::placeholders::_1));
   
 
@@ -220,13 +220,13 @@ private:
     // Callback для обработки команд скорости
     void cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr msg) {
         // Обновление линейных и угловых скоростей из полученного сообщения
-        // linear_vector[0] = msg->linear.x; // линейная скорость по оси X
-        // linear_vector[1] = msg->linear.y; // линейная скорость по оси Y
+        linear_vector[0] = 0.1 * msg->linear.x; // линейная скорость по оси X
+        linear_vector[1] = 0.1 * msg->linear.y; // линейная скорость по оси Y
         // linear_vector[2] = msg->linear.z; // линейная скорость по оси Z
 
         // angular_vector[0] = msg->angular.x; // угловая скорость по оси X
         // angular_vector[1] = msg->angular.y; // угловая скорость по оси Y
-        // angular_vector[2] = msg->angular.z; // угловая скорость по оси Z
+        angular_vector[2] = 0.1 * msg->angular.z; // угловая скорость по оси Z
 
         // Логирование полученных значений
         // RCLCPP_INFO(this->get_logger(), "Received cmd_vel: linear[x=%.2f, y=%.2f, z=%.2f], angular[x=%.2f, y=%.2f, z=%.2f]",
