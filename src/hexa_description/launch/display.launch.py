@@ -67,7 +67,6 @@ def generate_launch_description():
         )]
     )
 
-
     # Узел походки
     tripod_gait_node = launch_ros.actions.Node(
         package='hexa_ik',
@@ -82,6 +81,13 @@ def generate_launch_description():
         name='joy_node',
         output='screen',
         # parameters=[{'device': '/dev/input/js0'}]  # Убедись, что указываешь правильное устройство
+    )
+
+    teleop_node = launch_ros.actions.Node(
+        package='hexa_teleop',
+        executable='hexa_teleop',
+        name='hexa_teleop',
+        output='screen',
     )
 
     servo_node = launch_ros.actions.Node(
@@ -104,27 +110,6 @@ def generate_launch_description():
         remappings=[('/cmd_vel_out', '/cmd_vel')]
     )
 
-    joy_teleop = launch_ros.actions.Node(
-        package='teleop_twist_joy',
-        executable='teleop_node',
-        name='joy_teleop',
-        output='screen',
-        parameters=[{
-            'axis_linear.x': 3,
-            'scale_linear.x': 1.0,
-            'axis_linear.y': 2,
-            'scale_linear.y': 1.0,
-            'axis_angular.yaw': 0,
-            'scale_angular.yaw': 1.0,
-            'enable_button': 0,
-            'enable_button': 1,
-            'enable_button': 3,
-            'enable_button': 4
-        }],
-        remappings=[('/cmd_vel', '/joy/cmd_vel')]  # Меняем имя топика
-    )
-
-
     # Возвращаем описание запуска
     return launch.LaunchDescription([
         # Аргумент для включения/выключения GUI
@@ -144,8 +129,8 @@ def generate_launch_description():
         joint_state_publisher_node,
         # joint_state_publisher_gui_node,
         servo_node,
-        joy_teleop,
-        twist_mux,
+        # teleop_node,
+        # twist_mux,
         
         rviz_node,
         tripod_gait_node, 
