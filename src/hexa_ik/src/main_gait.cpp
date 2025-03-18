@@ -36,8 +36,8 @@ public:
         );
   
         cmd_vel_sub = this->create_subscription<geometry_msgs::msg::Twist>(
-            "/joy/cmd_vel", 
-            20,
+            "/cmd_vel_out", 
+            10,
             std::bind(&TripodGaitNode::cmd_vel_callback, this, std::placeholders::_1)
         );
         
@@ -46,8 +46,6 @@ public:
         timer_ = this->create_wall_timer(
             std::chrono::milliseconds(20),
             std::bind(&TripodGaitNode::update_tripod_gait, this));
-
-
     }
 
 private:
@@ -148,7 +146,7 @@ private:
 
         if (std::abs(linear_vector[0])+ std::abs(linear_vector[1]+angular_vector[2]) > 0.03) {
             period += 1;
-            if (period >= step_speed*50) { 
+            if (period >= step_speed * 50) { 
                 period = 0;
             } 
         } else {
@@ -166,7 +164,12 @@ private:
         // Генерация траекторий для каждой ноги
         for (size_t leg_number = 0; leg_number < 6; ++leg_number) {
 
-            std::array<double, 6> step = generate_arc_and_line(leg_phases[leg_number], step_height, linear_vector, angular_vector[2]);
+            std::array<double, 6> step = generate_arc_and_line(
+                leg_phases[leg_number], 
+                step_height, 
+                linear_vector, 
+                angular_vector[2]
+            );
             // RCLCPP_INFO(this->get_logger(), "Axis value: %f", step[3]);
 
             // leg number для какой ноги
@@ -174,12 +177,27 @@ private:
             // LEG_ANGLES разворот ног относительно тела
             // X_OFFSET как далеко от центра тела генерируется дуга 
             // linear_vector вектор напрвления 
-            std::array<double, 6> ik_pos = tripod_transform_line(leg_number, step, LEG_ANGLES, linear_vector, angular_vector[2], x_offset, z_offset);
+            std::array<double, 6> ik_pos = tripod_transform_line(
+                leg_number, 
+                step, 
+                LEG_ANGLES, 
+                linear_vector, 
+                angular_vector[2], 
+                x_offset, 
+                z_offset
+            );
     
             // Вычисление IK
             const auto& leg_params = HEXAPOD_GEOMETRY.legs[leg_number];
 
-            IKResult ik_result = calculate_leg_ik(ik_pos[0], ik_pos[1], ik_pos[2], leg_params, x_offset, z_offset+0.025);
+            IKResult ik_result = calculate_leg_ik(
+                ik_pos[0], 
+                ik_pos[1], 
+                ik_pos[2], 
+                leg_params, 
+                x_offset, 
+                z_offset + 0.025
+            );
 
             if (ik_result.success) {
                 joint_state_.positions[leg_number * 3] = ik_result.joint1_angle;
@@ -193,7 +211,6 @@ private:
 
         }
 
-        // publish_odometry();
         // Публикация состояния суставов
         publish_joint_states();
         
@@ -208,30 +225,6 @@ private:
 
         joint_state_pub->publish(joint_state_msg);
     }
-
-
-        // Публикация одометрии
-    // void publish_odometry() {
-    //     auto odom_msg = nav_msgs::msg::Odometry();
-    //     odom_msg.header.stamp = this->get_clock()->now();
-    //     odom_msg.header.frame_id = "odom";
-    //     odom_msg.child_frame_id = "base_link";
-
-    //     // Заполняем только скорость, позицию пока не трогаем
-    //     odom_msg.twist.twist.linear.x = linear_vector[0];
-    //     odom_msg.twist.twist.linear.y = linear_vector[1];
-    //     odom_msg.twist.twist.linear.z = 0.0;
-
-    //     odom_msg.twist.twist.angular.x = 0.0;
-    //     odom_msg.twist.twist.angular.y = 0.0;
-    //     odom_msg.twist.twist.angular.z = 0.0;
-
-    //     odom_pub_->publish(odom_msg);
-    // }
-
-
-
-
 };
 
 int main(int argc, char *argv[]) {

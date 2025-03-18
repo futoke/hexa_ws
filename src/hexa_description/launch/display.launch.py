@@ -90,18 +90,20 @@ def generate_launch_description():
         output='screen'
     )
 
-    # twist_mux_config = os.path.join(
-    #     get_package_share_directory('hexa_description'), 'config', 'twist_mux.yaml'
-    # )
+    twist_mux_config = os.path.join(
+        get_package_share_directory('hexa_description'), 'config', 'twist_mux.yaml'
+    )
 
-    # twist_mux = launch_ros.actions.Node(
-    #     package='twist_mux',
-    #     executable='twist_mux',
-    #     name='twist_mux',
-    #     output='screen',
-    #     parameters=[twist_mux_config],
-    #     remappings=[('/cmd_vel_out', '/cmd_vel')]
-    # )
+    print(twist_mux_config)
+
+    twist_mux = launch_ros.actions.Node(
+        package='twist_mux',
+        executable='twist_mux',
+        name='twist_mux',
+        output='screen',
+        parameters=[twist_mux_config],
+        # remappings=[('/cmd_vel', '/cmd_vel_mux')]
+    )
 
     # Возвращаем описание запуска
     return launch.LaunchDescription([
@@ -123,7 +125,7 @@ def generate_launch_description():
         # joint_state_publisher_gui_node,
         servo_node,
         teleop_node,
-        # twist_mux,
+        twist_mux,
         
         rviz_node,
         tripod_gait_node, 

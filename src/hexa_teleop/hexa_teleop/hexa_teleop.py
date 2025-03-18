@@ -19,6 +19,9 @@ class HexaTeleop(Node):
         # Состояние кнопок и время последнего нажатия для устранения дребезга
         self.last_button_times = {}  # Словарь для хранения времени последнего нажатия
         self.debounce_time = 0.2  # Время задержки в секундах (200 мс)
+
+         # Флаг активности джойстика
+        self.last_joy_msg = None
     
     def joy_callback(self, msg):
         twist = Twist()
@@ -33,8 +36,10 @@ class HexaTeleop(Node):
         twist.angular.y = 0.0
         twist.angular.z = msg.axes[0]  # Поворот вокруг оси Z
 
-        # Публикация команды движения
-        self.cmd_vel_pub.publish(twist)
+        # Публикация команды движения только если сообщение изменилось
+        if self.last_joy_msg is None or self.last_joy_msg != msg:
+            self.cmd_vel_pub.publish(twist)
+            self.last_joy_msg = msg
 
         current_time = time.time()
         
