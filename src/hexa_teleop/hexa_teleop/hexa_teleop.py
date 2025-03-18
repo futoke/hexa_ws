@@ -3,6 +3,7 @@ from rclpy.node import Node
 from sensor_msgs.msg import Joy
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Int32
+import time
 
 class HexaTeleop(Node):
     def __init__(self):
@@ -15,6 +16,10 @@ class HexaTeleop(Node):
         self.cmd_vel_pub = self.create_publisher(Twist, '/joy/cmd_vel', 10)
         self.buttons_pub = self.create_publisher(Int32, '/joy/buttons', 10)
         
+        # Состояние кнопок и время последнего нажатия для устранения дребезга
+        self.last_button_times = {}  # Словарь для хранения времени последнего нажатия
+        self.debounce_time = 0.2  # Время задержки в секундах (200 мс)
+    
     def joy_callback(self, msg):
         twist = Twist()
         
@@ -31,13 +36,18 @@ class HexaTeleop(Node):
         # Публикация команды движения
         self.cmd_vel_pub.publish(twist)
 
-        # Публикация нажатой кнопки (если есть)
+        current_time = time.time()
+        
+        # Публикация нажатой кнопки (устранение дребезга по времени)
         for i, button in enumerate(msg.buttons):
             if button == 1:
-                button_msg = Int32()
-                button_msg.data = i  # Отправляем индекс нажатой кнопки
-                self.buttons_pub.publish(button_msg)
-                # self.get_logger().info(f'Button {i} pressed!')
+                last_time = self.last_button_times.get(i, 0)
+                if current_time - last_time > self.debounce_time:
+                    button_msg = Int32()
+                    button_msg.data = i  # Отправляем индекс нажатой кнопки
+                    self.buttons_pub.publish(button_msg)
+                    # self.get_logger().info(f'Button {i} pressed!')
+                    self.last_button_times[i] = current_time  # Обновляем время последнего нажатия
 
 
 def main(args=None):

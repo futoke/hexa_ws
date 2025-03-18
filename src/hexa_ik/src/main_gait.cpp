@@ -29,10 +29,10 @@ public:
         joint_state_pub = this->create_publisher<sensor_msgs::msg::JointState>("/joint_states", 10);
 
 
-        btn_subscriber = this->create_subscription<std_msgs::msg::Int32>(
+        btn_sub = this->create_subscription<std_msgs::msg::Int32>(
             "/joy/buttons", 
             10, 
-            std::bind(&ButtonListener::button_callback, this, std::placeholders::_1)
+            std::bind(&TripodGaitNode::button_callback, this, std::placeholders::_1)
         );
   
         cmd_vel_sub = this->create_subscription<geometry_msgs::msg::Twist>(
@@ -62,19 +62,9 @@ private:
     // Подписка на /cmd_vel
     rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_sub;
 
-    // Подписка на /joy
-    rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr joy_subscriber_;
-
-    cmd_vel_sub = this->create_subscription<geometry_msgs::msg::Twist>(
-        "/joy/cmd_vel", 
-        20,
-        std::bind(&TripodGaitNode::cmd_vel_callback, this, std::placeholders::_1)
-    );
-
-
-    // Публикация одометрии
-    // rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_pub_;
-
+    // Подписка на /joy/buttons
+    rclcpp::Subscription<std_msgs::msg::Int32>::SharedPtr btn_sub;
+   
     rclcpp::TimerBase::SharedPtr timer_;
 
     // Хранилище текущего состояния суставов
@@ -96,60 +86,34 @@ private:
     double step_speed= 1.875;
 
     void button_callback(const std_msgs::msg::Int32::SharedPtr msg)
-    {
-        // Buttons z UP
-        if (msg->data == 4) {
-            rclcpp::Time current_time(msg->header.stamp);
-            static rclcpp::Time last_press_time(0, 0, RCL_ROS_TIME); // Инициализация времени
-            if(z_offset <=0.025){
-                z_offset = 0.025; 
-            }
-            if ((current_time - last_press_time).seconds() > 0.2) { // Задержка 100 мс
+    {   
+        RCLCPP_INFO(
+                this->get_logger(), 
+                "x_offset=%.3f, z_offset=%.3f", x_offset, z_offset
+            );
+        switch (msg->data) {
+            case 4: // UP
+                if (z_offset <= 0.025) z_offset = 0.025;
                 z_offset -= 0.005;
-                last_press_time = current_time; // Обновляем время
-            }
-        }
-
-        // z DOWN
-        if (msg->data == 0) {
-            rclcpp::Time current_time(msg->header.stamp);
-            static rclcpp::Time last_press_time(0, 0, RCL_ROS_TIME); // Инициализация времени
-            
-            if(z_offset >= 0.15){
-                z_offset = 0.15; 
-            }
-            if ((current_time - last_press_time).seconds() > 0.2) { // Задержка 100 мс
+                break;
+        
+            case 0: // DOWN
+                if (z_offset >= 0.1) z_offset = 0.1;
                 z_offset += 0.005;
-                last_press_time = current_time; // Обновляем время
-            }
-        }
-
-        // right 
-        if (msg->data == 1) {
-            rclcpp::Time current_time(msg->header.stamp);
-            static rclcpp::Time last_press_time(0, 0, RCL_ROS_TIME); // Инициализация времени
-            if(x_offset >= 0.20){
-                x_offset = 0.20; 
-            }
-
-            if ((current_time - last_press_time).seconds() > 0.2) { // Задержка 100 мс
+                break;
+        
+            case 1: // right
+                if (x_offset >= 0.20) x_offset = 0.20;
                 x_offset += 0.005;
-                last_press_time = current_time; // Обновляем время
-            }
-        }
-
-        // left 
-        if (msg->data == 3) {
-            rclcpp::Time current_time(msg->header.stamp);
-            static rclcpp::Time last_press_time(0, 0, RCL_ROS_TIME); // Инициализация времени
-            if(x_offset <= 0.01){
-                x_offset = 0.01; 
-            }
-            if ((current_time - last_press_time).seconds() > 0.2) { // Задержка 100 мс
+                break;
+        
+            case 3: // left
+                if (x_offset <= 0.12) x_offset = 0.12;
                 x_offset -= 0.005;
-                last_press_time = current_time; // Обновляем время
-            }
-
+                break;
+        
+            default:
+                break;
         }
     }
 
@@ -157,17 +121,20 @@ private:
     // Callback для обработки команд скорости
     void cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr msg) {
         linear_vector[0] = msg->linear.x * max_step_len * 2;
-        linear_vector[1] = msg->linear.x * max_step_len * 2;
+        linear_vector[1] = msg->linear.y * max_step_len * 2;
         linear_vector[2] = 0.0;
 
         angular_vector[0] = 0.0;
         angular_vector[1] = 0.0;
         angular_vector[2] = msg->angular.z * 0.05;
 
-        Логирование полученных значений
-        RCLCPP_INFO(this->get_logger(), "Received cmd_vel: linear[x=%.2f, y=%.2f, z=%.2f], angular[x=%.2f, y=%.2f, z=%.2f]",
-                    linear_vector[0], linear_vector[1], linear_vector[2],
-                    angular_vector[0], angular_vector[1], angular_vector[2]);
+        // Логирование полученных значений
+        // RCLCPP_INFO(
+        //     this->get_logger(), 
+        //     "Received cmd_vel: linear[x=%.2f, y=%.2f, z=%.2f], angular[x=%.2f, y=%.2f, z=%.2f]",
+        //     linear_vector[0], linear_vector[1], linear_vector[2],
+        //     angular_vector[0], angular_vector[1], angular_vector[2]
+        // );
     }
 
     double period  = 0.0;

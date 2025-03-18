@@ -19,8 +19,10 @@ def generate_launch_description():
         robot_desc = infp.read()
 
     # Параметры для robot_state_publisher
-    params = {'robot_description': robot_desc,
-              'use_sim_time': True}
+    params = {
+        'robot_description': robot_desc,
+        'use_sim_time': True
+    }
 
     # Узел для публикации состояний робота
     robot_state_publisher_node = launch_ros.actions.Node(
@@ -44,15 +46,6 @@ def generate_launch_description():
         name='joint_state_publisher_gui',
         condition=launch.conditions.IfCondition(LaunchConfiguration('gui'))
     )
-
-    # # Узел для запуска RViz без файла конфигурации
-    # rviz_node = launch_ros.actions.Node(
-    #     package='rviz2',
-    #     executable='rviz2',
-    #     name='rviz2',
-    #     output='screen',
-
-    # )
 
     # Узел для запуска RViz с указанием файла конфигурации
     rviz_node = launch_ros.actions.Node(
@@ -97,18 +90,18 @@ def generate_launch_description():
         output='screen'
     )
 
-    twist_mux_config = os.path.join(
-        get_package_share_directory('hexa_description'), 'config', 'twist_mux.yaml'
-    )
+    # twist_mux_config = os.path.join(
+    #     get_package_share_directory('hexa_description'), 'config', 'twist_mux.yaml'
+    # )
 
-    twist_mux = launch_ros.actions.Node(
-        package='twist_mux',
-        executable='twist_mux',
-        name='twist_mux',
-        output='screen',
-        parameters=[twist_mux_config],
-        remappings=[('/cmd_vel_out', '/cmd_vel')]
-    )
+    # twist_mux = launch_ros.actions.Node(
+    #     package='twist_mux',
+    #     executable='twist_mux',
+    #     name='twist_mux',
+    #     output='screen',
+    #     parameters=[twist_mux_config],
+    #     remappings=[('/cmd_vel_out', '/cmd_vel')]
+    # )
 
     # Возвращаем описание запуска
     return launch.LaunchDescription([
@@ -129,7 +122,7 @@ def generate_launch_description():
         joint_state_publisher_node,
         # joint_state_publisher_gui_node,
         servo_node,
-        # teleop_node,
+        teleop_node,
         # twist_mux,
         
         rviz_node,
